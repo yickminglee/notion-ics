@@ -1,4 +1,5 @@
 import ical from 'ical-generator';
+// import { getVtimezoneComponent } from '@touch4it/ical-timezones';
 
 import { Client } from '@notionhq/client';
 import type {
@@ -14,21 +15,10 @@ export const trailingSlash = 'never';
 
 const notion = new Client({ auth: NOTION_TOKEN, notionVersion: '2025-09-03' });
 
-function toUtcIcsString(date: Date) {
-	const pad = (n: number) => String(n).padStart(2, '0');
-
-	return [
-		date.getUTCFullYear(),
-		pad(date.getUTCMonth() + 1),
-		pad(date.getUTCDate())
-	].join('') +
-		'T' +
-		[
-			pad(date.getUTCHours()),
-			pad(date.getUTCMinutes()),
-			pad(date.getUTCSeconds())
-		].join('') +
-		'Z';
+function forceUtcDateTimeLines(ics: string) {
+	return ics
+		.replace(/^DTSTART:(\d{8}T\d{6})(?!Z)$/gm, 'DTSTART:$1Z')
+		.replace(/^DTEND:(\d{8}T\d{6})(?!Z)$/gm, 'DTEND:$1Z');
 }
 
 // function toLocalDateParts(value: string) {
@@ -95,14 +85,16 @@ export const GET: RequestHandler = async ({ params, url }) => {
 		calendar.createEvent({
 			// start: toLocalDateParts(event.date.start),
 			// end: event.date.end ? toLocalDateParts(event.date.end) : undefined,
-			start: toUtcIcsString(new Date(event.date.start)),
-			end: event.date.end ? toUtcIcsString(new Date(event.date.end)) : undefined,
+			start: new Date(event.date.start),
+			end: event.date.end ? new Date(event.date.end) : undefined,
 			// timezone: 'Asia/Hong_Kong',
 			summary: event.title,
 			busystatus: config.busy,
 			id: event.id
 		});
 	});
+
+	const ics = forceUtcDateTimeLines(calendar.toString());
 
 	return new Response(calendar.toString(), {
 		status: 200,
