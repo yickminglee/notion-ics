@@ -77,6 +77,7 @@ export const GET: RequestHandler = async ({ params, url }) => {
 		calendar.createEvent({
 			start: new Date(event.date.start),
 			end: event.date.end ? new Date(event.date.end) : undefined,
+			timezone: 'UTC',
 			summary: event.title,
 			busystatus: config.busy,
 			id: event.id
