@@ -3,6 +3,10 @@ import type { QueryDataSourceParameters } from '@notionhq/client/build/src/api-e
 
 export default {
 	filter: {
+		and: [
+			{ property: 'Event name', status: { does_not_equal: 'Nope' } },
+			{ property: 'Date', select: { does_not_equal: 'Nope' } }
+		]
 	},
 	dateProperty: 'Date',
 	titleProperty: 'Event name',
