@@ -1,5 +1,4 @@
 import ical from 'ical-generator';
-import { getVtimezoneComponent } from '@touch4it/ical-timezones';
 
 import { Client } from '@notionhq/client';
 import type {
@@ -15,12 +14,29 @@ export const trailingSlash = 'never';
 
 const notion = new Client({ auth: NOTION_TOKEN, notionVersion: '2025-09-03' });
 
-function toLocalDateParts(value: string) {
-	const [datePart, timePart] = value.split('T');
-	const [year, month, day] = datePart.split('-').map(Number);
-	const [hour, minute, second] = timePart.slice(0, 8).split(':').map(Number);
-	return new Date(year, month - 1, day, hour, minute, second || 0);
+function toUtcIcsString(date: Date) {
+	const pad = (n: number) => String(n).padStart(2, '0');
+
+	return [
+		date.getUTCFullYear(),
+		pad(date.getUTCMonth() + 1),
+		pad(date.getUTCDate())
+	].join('') +
+		'T' +
+		[
+			pad(date.getUTCHours()),
+			pad(date.getUTCMinutes()),
+			pad(date.getUTCSeconds())
+		].join('') +
+		'Z';
 }
+
+// function toLocalDateParts(value: string) {
+// 	const [datePart, timePart] = value.split('T');
+// 	const [year, month, day] = datePart.split('-').map(Number);
+// 	const [hour, minute, second] = timePart.slice(0, 8).split(':').map(Number);
+// 	return new Date(year, month - 1, day, hour, minute, second || 0);
+// }
 
 export const GET: RequestHandler = async ({ params, url }) => {
 	const secret = url.searchParams.get('secret');
@@ -71,15 +87,17 @@ export const GET: RequestHandler = async ({ params, url }) => {
 		name: dataSource.name,
 		prodId: { company: 'Ming', language: 'EN', product: 'notion-ics' }
 	});
-	calendar.timezone({
-		name: 'Asia/Hong_Kong',
-		generator: getVtimezoneComponent
-	});
+	// calendar.timezone({
+	// 	name: 'Asia/Hong_Kong',
+	// 	generator: getVtimezoneComponent
+	// });
 	filtered.forEach((event) => {
 		calendar.createEvent({
-			start: toLocalDateParts(event.date.start),
-			end: event.date.end ? toLocalDateParts(event.date.end) : undefined,
-			timezone: 'Asia/Hong_Kong',
+			// start: toLocalDateParts(event.date.start),
+			// end: event.date.end ? toLocalDateParts(event.date.end) : undefined,
+			start: toUtcIcsString(new Date(event.date.start)),
+			end: event.date.end ? toUtcIcsString(new Date(event.date.end)) : undefined,
+			// timezone: 'Asia/Hong_Kong',
 			summary: event.title,
 			busystatus: config.busy,
 			id: event.id
