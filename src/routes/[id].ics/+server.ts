@@ -69,6 +69,11 @@ export const GET: RequestHandler = async ({ params, url }) => {
 		generator: getVtimezoneComponent
 	});
 	filtered.forEach((event) => {
+		console.log('title', event.title);
+		console.log('raw start', event.date.start);
+		console.log('raw end', event.date.end);
+		console.log('parsed start iso', new Date(event.date.start).toISOString());
+		console.log('parsed end iso', event.date.end ? new Date(event.date.end).toISOString() : null);
 		calendar.createEvent({
 			start: new Date(event.date.start),
 			end: event.date.end ? new Date(event.date.end) : undefined,
