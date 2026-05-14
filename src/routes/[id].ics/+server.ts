@@ -79,19 +79,11 @@ export const GET: RequestHandler = async ({ params, url }) => {
 		calendar.createEvent({
 			start: toLocalDateParts(event.date.start),
 			end: event.date.end ? toLocalDateParts(event.date.end) : undefined,
+			timezone: 'Asia/Hong_Kong',
 			summary: event.title,
 			busystatus: config.busy,
 			id: event.id
 		});
-		const first = filtered[0];
-		if (first) {
-			console.log('raw start', first.date.start);
-			console.log('raw end', first.date.end);
-			console.log('parsed start', new Date(first.date.start).toISOString());
-			console.log('parsed end', first.date.end ? new Date(first.date.end).toISOString() : null);
-			console.log('parsed start2', new toLocalDateParts(first.date.start).toISOString());
-			console.log('parsed end2', first.date.end ? new toLocalDateParts(first.date.end).toISOString() : null);
-		}
 	});
 
 	return new Response(calendar.toString(), {
