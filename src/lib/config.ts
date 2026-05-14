@@ -3,15 +3,10 @@ import type { QueryDataSourceParameters } from '@notionhq/client/build/src/api-e
 
 export default {
 	filter: {
-		and: [
-			{ property: 'Status', status: { does_not_equal: 'Completed' } },
-			{ property: 'Status', status: { does_not_equal: 'Nope' } },
-			{ property: 'Type', select: { equals: 'Task' } }
-		]
 	},
-	dateProperty: 'Scheduled',
-	titleProperty: 'Name',
-	busy: ICalEventBusyStatus.FREE
+	dateProperty: 'Date',
+	titleProperty: 'Event name',
+	busy: ICalEventBusyStatus.BUSY
 } as {
 	filter: Readonly<QueryDataSourceParameters['filter']>;
 	dateProperty: Readonly<string>;
