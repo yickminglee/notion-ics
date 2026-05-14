@@ -13,7 +13,7 @@
 	},
 	"devDependencies": {
 		"@notionhq/client": "^5.1.0",
-		"@sveltejs/adapter-netlify": "5.2.3",
+		"@sveltejs/adapter-node": "^latest",
 		"@sveltejs/kit": "2.42.1",
 		"@types/node": "^24.5.2",
 		"@typescript-eslint/eslint-plugin": "^8.44.0",
