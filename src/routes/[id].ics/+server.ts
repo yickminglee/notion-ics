@@ -65,14 +65,13 @@ export const GET: RequestHandler = async ({ params, url }) => {
 		prodId: { company: 'Ming', language: 'EN', product: 'notion-ics' }
 	});
 	calendar.timezone({
-		name: 'UTC',
+		name: 'Asia/Hong_Kong',
 		generator: getVtimezoneComponent
 	});
 	filtered.forEach((event) => {
 		calendar.createEvent({
 			start: new Date(event.date.start),
 			end: event.date.end ? new Date(event.date.end) : undefined,
-			timezone: 'UTC',
 			summary: event.title,
 			busystatus: config.busy,
 			id: event.id
