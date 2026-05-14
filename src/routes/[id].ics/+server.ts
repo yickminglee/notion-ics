@@ -15,6 +15,13 @@ export const trailingSlash = 'never';
 
 const notion = new Client({ auth: NOTION_TOKEN, notionVersion: '2025-09-03' });
 
+function toLocalDateParts(value: string) {
+	const [datePart, timePart] = value.split('T');
+	const [year, month, day] = datePart.split('-').map(Number);
+	const [hour, minute, second] = timePart.slice(0, 8).split(':').map(Number);
+	return new Date(year, month - 1, day, hour, minute, second || 0);
+}
+
 export const GET: RequestHandler = async ({ params, url }) => {
 	const secret = url.searchParams.get('secret');
 	if (secret !== ACCESS_KEY) {
@@ -70,8 +77,8 @@ export const GET: RequestHandler = async ({ params, url }) => {
 	});
 	filtered.forEach((event) => {
 		calendar.createEvent({
-			start: new Date(event.date.start),
-			end: event.date.end ? new Date(event.date.end) : undefined,
+			start: toLocalDateParts(event.date.start),
+			end: event.date.end ? toLocalDateParts(event.date.end) : undefined,
 			summary: event.title,
 			busystatus: config.busy,
 			id: event.id
@@ -82,6 +89,8 @@ export const GET: RequestHandler = async ({ params, url }) => {
 			console.log('raw end', first.date.end);
 			console.log('parsed start', new Date(first.date.start).toISOString());
 			console.log('parsed end', first.date.end ? new Date(first.date.end).toISOString() : null);
+			console.log('parsed start2', new toLocalDateParts(first.date.start).toISOString());
+			console.log('parsed end2', first.date.end ? new toLocalDateParts(first.date.end).toISOString() : null);
 		}
 	});
 
